@@ -1,211 +1,959 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MellowTecH Company (Pty) Ltd - REG NO:2025/457277/07</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MellowTecH Company (Pty) Ltd — Cybersecurity</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
-body {
-  margin:0;
-  padding:0;
-  font-family:'Segoe UI',sans-serif;
-  color:#fff;
-  overflow-x:auto;
-  position:relative;
+/* ── RESET & ROOT ── */
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --c:#00ffcc;        /* primary cyan-green */
+  --c2:#00cfff;       /* secondary blue-cyan */
+  --red:#ff3a3a;
+  --bg:#010a0f;
+  --bg2:#040f18;
+  --bg3:#061624;
+  --border:rgba(0,255,204,0.12);
+  --border-hi:rgba(0,255,204,0.4);
+  --text:#c8e8f0;
+  --muted:#5a8a9f;
+  --dim:#2a4a5a;
+  --mono:'Share Tech Mono',monospace;
+  --display:'Orbitron',sans-serif;
+  --body:'Inter',sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--body);overflow-x:hidden;line-height:1.6;}
+
+/* ── CANVAS LAYERS ── */
+#cvs{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.grid{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(0,255,204,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,255,204,0.03) 1px,transparent 1px);
+  background-size:50px 50px;
+}
+.scanbar{
+  position:fixed;left:0;right:0;height:3px;z-index:2;pointer-events:none;
+  background:linear-gradient(90deg,transparent 0%,var(--c) 30%,var(--c2) 70%,transparent 100%);
+  opacity:.18;animation:scandown 10s linear infinite;top:-3px;
+}
+@keyframes scandown{to{top:100vh;}}
+
+/* ── WRAPPER ── */
+.page{position:relative;z-index:10;}
+
+/* ══════════════════════
+   NAV
+══════════════════════ */
+nav{
+  position:fixed;top:0;width:100%;z-index:200;height:68px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;
+  background:rgba(1,10,15,0.88);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(14px);
+}
+.nav-brand{display:flex;align-items:center;gap:14px;text-decoration:none;}
+/* SVG LOGO */
+.logo-svg{width:44px;height:44px;flex-shrink:0;}
+.brand-text{font-family:var(--display);font-size:17px;font-weight:700;color:#fff;letter-spacing:1px;line-height:1.1;}
+.brand-text em{color:var(--c);font-style:normal;}
+.brand-sub{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;display:block;margin-top:1px;}
+.nav-links{display:flex;align-items:center;gap:36px;}
+.nav-links a{
+  font-family:var(--mono);font-size:12px;letter-spacing:1.5px;
+  color:var(--muted);text-decoration:none;text-transform:uppercase;
+  transition:color .2s;position:relative;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;
+  background:var(--c);transform:scaleX(0);transform-origin:left;transition:transform .25s;
+}
+.nav-links a:hover{color:var(--c);}
+.nav-links a:hover::after{transform:scaleX(1);}
+.nav-cta{
+  font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--c);border:1px solid var(--c);background:transparent;
+  padding:9px 22px;cursor:pointer;transition:all .2s;
+  clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+}
+.nav-cta:hover{background:var(--c);color:#010a0f;}
+
+/* ══════════════════════
+   HERO
+══════════════════════ */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;padding:110px 40px 80px;position:relative;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--c);border:1px solid var(--border-hi);background:rgba(0,255,204,0.04);
+  padding:7px 18px;margin-bottom:32px;
+  clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);
+}
+.hero-badge-dot{width:7px;height:7px;border-radius:50%;background:var(--c);animation:pulse 1.8s ease-in-out infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,255,204,.5);}70%{box-shadow:0 0 0 8px rgba(0,255,204,0);}}
+.hero-title{
+  font-family:var(--display);font-weight:900;
+  font-size:clamp(38px,7vw,90px);letter-spacing:-1px;line-height:1;
+  color:#fff;margin-bottom:8px;
+}
+.hero-title .line2{color:var(--c);display:block;}
+.hero-title .line3{color:var(--red);display:block;font-size:clamp(18px,2.5vw,36px);font-weight:600;letter-spacing:4px;margin-top:8px;}
+.hero-desc{
+  font-size:clamp(13px,1.5vw,16px);color:var(--muted);
+  max-width:520px;margin:28px auto 44px;line-height:1.8;
+}
+.hero-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.btn-pri{
+  font-family:var(--mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;
+  background:var(--c);color:#010a0f;border:none;
+  padding:14px 36px;cursor:pointer;font-weight:700;
+  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  transition:all .2s;
+}
+.btn-pri:hover{background:#fff;transform:translateY(-2px);}
+.btn-sec{
+  font-family:var(--mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;
+  background:transparent;color:var(--text);border:1px solid var(--border-hi);
+  padding:14px 36px;cursor:pointer;
+  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  transition:all .2s;
+}
+.btn-sec:hover{border-color:var(--c);color:var(--c);}
+
+/* TERMINAL */
+.terminal{
+  max-width:700px;width:100%;margin:56px auto 0;
+  border:1px solid var(--border);background:var(--bg2);
+  font-family:var(--mono);text-align:left;overflow:hidden;
+}
+.term-bar{
+  background:var(--bg3);padding:12px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.tdot{width:11px;height:11px;border-radius:50%;}
+.tdot.r{background:#ff5f57;}.tdot.y{background:#febc2e;}.tdot.g{background:#28c840;}
+.term-title{font-family:var(--mono);font-size:11px;color:var(--muted);margin:0 auto;letter-spacing:2px;}
+.term-body{padding:20px 24px;font-size:12.5px;line-height:2;}
+.tl{display:flex;gap:12px;}
+.tp{color:var(--c);}
+.tc{color:#fff;}
+.to{padding-left:22px;color:var(--muted);}
+.to.ok{color:#28c840;}.to.warn{color:#febc2e;}.to.err{color:var(--red);}
+.tcursor{display:inline-block;width:8px;height:14px;background:var(--c);animation:blink 1s steps(1) infinite;vertical-align:text-bottom;margin-left:2px;}
+@keyframes blink{50%{opacity:0;}}
+
+/* STATS BAR */
+.stats-bar{
+  display:flex;gap:0;border-top:1px solid var(--border);
+  margin-top:64px;width:100%;max-width:800px;
+}
+.stat{
+  flex:1;padding:28px 20px;text-align:center;border-right:1px solid var(--border);
+}
+.stat:last-child{border-right:none;}
+.stat-n{font-family:var(--display);font-size:clamp(22px,3.5vw,38px);font-weight:700;color:#fff;}
+.stat-n span{color:var(--c);}
+.stat-l{font-family:var(--mono);font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+
+/* ══════════════════════
+   SECTIONS
+══════════════════════ */
+.sec{padding:100px 48px;max-width:1200px;margin:0 auto;}
+.sec-label{font-family:var(--mono);font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--c);margin-bottom:14px;}
+.sec-title{font-family:var(--display);font-size:clamp(26px,4vw,48px);font-weight:700;letter-spacing:-0.5px;color:#fff;line-height:1.1;margin-bottom:14px;}
+.sec-title em{color:var(--c);font-style:normal;}
+.sec-desc{color:var(--muted);font-size:15px;line-height:1.8;max-width:500px;}
+
+/* ══════════════════════
+   SERVICES
+══════════════════════ */
+.svc-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));
+  gap:1px;background:var(--border);border:1px solid var(--border);
+  margin-top:56px;
+}
+.svc-card{
+  background:var(--bg);padding:36px 32px;position:relative;overflow:hidden;
+  transition:background .25s;cursor:default;
+}
+.svc-card:hover{background:var(--bg2);}
+.svc-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--c),transparent);
+  transform:translateX(-100%);transition:transform .6s;
+}
+.svc-card:hover::before{transform:translateX(0);}
+/* corner accent */
+.svc-card::after{
+  content:'';position:absolute;bottom:0;right:0;
+  width:40px;height:40px;
+  border-bottom:1px solid var(--border-hi);
+  border-right:1px solid var(--border-hi);
+  opacity:0;transition:opacity .25s;
+}
+.svc-card:hover::after{opacity:1;}
+.svc-icon{
+  width:48px;height:48px;border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;margin-bottom:22px;background:rgba(0,255,204,0.04);
+}
+.svc-card h3{font-family:var(--display);font-size:14px;font-weight:600;color:#fff;margin-bottom:12px;letter-spacing:0.5px;}
+.svc-card p{color:var(--muted);font-size:13.5px;line-height:1.7;}
+.svc-tag{
+  display:inline-block;margin-top:20px;font-family:var(--mono);font-size:10px;
+  letter-spacing:2px;text-transform:uppercase;color:var(--c);
+  border-bottom:1px solid rgba(0,255,204,0.3);padding-bottom:2px;
 }
 
-/* ✅ Darker Animated Background */
-.animated-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(270deg, #00010a, #00061a, #001433, #00010a);
-  background-size: 400% 400%;
-  animation: gradientMove 18s ease infinite;
-  z-index: -3;
+/* ══════════════════════
+   THREAT LIVE SECTION
+══════════════════════ */
+.threat-wrap{
+  background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:100px 48px;
 }
-.lines {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: repeating-linear-gradient(
-    115deg,
-    rgba(0, 255, 255, 0.06) 0px,
-    rgba(0, 255, 255, 0.06) 2px,
-    transparent 4px,
-    transparent 40px
-  );
-  animation: linesMove 12s linear infinite;
-  z-index: -2;
+.threat-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.live-badge{
+  display:inline-flex;align-items:center;gap:8px;margin-top:32px;
+  font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--red);border:1px solid rgba(255,58,58,.3);background:rgba(255,58,58,.06);
+  padding:6px 14px;
 }
-
-/* Animations */
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+.live-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse 1s infinite;}
+.counters{margin-top:32px;display:flex;flex-direction:column;gap:12px;}
+.ctr{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 20px;border:1px solid var(--border);background:var(--bg);
+  transition:border-color .2s;
 }
-@keyframes linesMove {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-300px); }
+.ctr:hover{border-color:var(--border-hi);}
+.ctr-label{font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;}
+.ctr-val{font-family:var(--display);font-size:20px;font-weight:700;color:var(--c);}
+.ctr-val.red{color:var(--red);}
+.map-wrap{position:relative;}
+#tmap{width:100%;height:340px;border:1px solid var(--border);background:var(--bg);display:block;}
+.map-label{
+  position:absolute;top:14px;right:14px;
+  font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--red);
+  border:1px solid rgba(255,58,58,.3);padding:4px 10px;background:rgba(255,58,58,.05);
+  display:flex;align-items:center;gap:6px;
 }
+.map-label::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse 1s infinite;}
 
-.overlay {
-  background:rgba(0,0,0,0.75);
-  min-height:100vh;
-  padding:40px 20px;
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  position:relative;
-  z-index:1;
+/* ══════════════════════
+   PROCESS STEPS
+══════════════════════ */
+.process-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
+.process-steps{margin-top:16px;}
+.pstep{display:flex;gap:24px;margin-bottom:40px;position:relative;}
+.pstep::before{
+  content:'';position:absolute;left:19px;top:42px;bottom:-40px;width:1px;
+  background:linear-gradient(var(--border-hi),transparent);
 }
+.pstep:last-child::before{display:none;}
+.pnode{
+  width:40px;height:40px;flex-shrink:0;border:1px solid var(--c);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:12px;font-weight:700;color:var(--c);
+  background:var(--bg);position:relative;z-index:1;
+}
+.pstep-body h4{font-family:var(--display);font-size:13px;font-weight:600;color:#fff;margin-bottom:6px;letter-spacing:0.5px;}
+.pstep-body p{color:var(--muted);font-size:13px;line-height:1.7;}
 
-/* Header */
-header {text-align:left;margin-bottom:10px;display:flex;justify-content:space-between;width:100%;align-items:center;}
-h1 {color:#00ffff;font-size:42px;margin:0;text-shadow:0 0 10px #00ffff;}
-.registered {font-size:18px;color:#00ffff;vertical-align:super;}
-.regno {font-size:14px;color:#bbb;margin-left:10px;}
-h2.tagline {font-size:22px;color:#ff4d4d;font-weight:bold;margin:5px 0;}
+/* ══════════════════════
+   WHY US CARDS
+══════════════════════ */
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:52px;}
+.why-card{
+  border:1px solid var(--border);padding:32px 24px;text-align:center;
+  transition:all .25s;background:var(--bg);
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px));
+}
+.why-card:hover{border-color:var(--border-hi);background:var(--bg2);transform:translateY(-4px);}
+.why-n{font-family:var(--display);font-size:36px;font-weight:900;color:var(--c);line-height:1;margin-bottom:10px;}
+.why-card h4{font-family:var(--display);font-size:11px;font-weight:600;color:#fff;margin-bottom:8px;letter-spacing:0.5px;}
+.why-card p{font-size:12px;color:var(--muted);line-height:1.6;}
 
-/* Navbar */
-.navbar {display:flex;gap:30px;background:rgba(20,20,20,0.9);padding:10px 20px;margin-bottom:20px;box-shadow:0 0 10px rgba(0,255,255,0.2);width:100%;}
-.navbar a {color:#fff;text-decoration:none;font-size:16px;position:relative;}
-.navbar a::after {content:'\25BC';margin-left:5px;font-size:12px;}
-.navbar a:hover {color:#00ffff;}
-.dropdown-content {display:none;padding:15px;background:rgba(30,30,30,0.9);border-radius:8px;margin-top:5px;line-height:1.5;}
-.nav-item:hover .dropdown-content {display:block;}
+/* ══════════════════════
+   TESTIMONIALS
+══════════════════════ */
+.t-track{display:flex;gap:20px;overflow:hidden;margin-top:48px;}
+.t-card{
+  min-width:340px;border:1px solid var(--border);background:var(--bg2);
+  padding:28px 24px;flex-shrink:0;transition:border-color .2s;position:relative;
+}
+.t-card::before{
+  content:'"';position:absolute;top:12px;right:20px;
+  font-family:var(--display);font-size:60px;color:var(--border);line-height:1;
+}
+.t-card:hover{border-color:var(--border-hi);}
+.t-stars{color:var(--c);font-size:12px;letter-spacing:3px;margin-bottom:14px;}
+.t-card p{color:var(--muted);font-size:13px;line-height:1.8;font-style:italic;margin-bottom:20px;}
+.t-author{display:flex;align-items:center;gap:12px;}
+.t-av{
+  width:38px;height:38px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--c),var(--c2));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-size:12px;font-weight:700;color:#010a0f;
+}
+.t-name{font-family:var(--display);font-size:11px;color:#fff;letter-spacing:0.5px;}
+.t-role{font-family:var(--mono);font-size:10px;color:var(--dim);}
 
-/* Boxes */
-.box-section {width:100%;}
-.large-box {background:rgba(20,20,20,0.9);padding:20px;border-radius:10px;box-shadow:0 0 15px rgba(0,255,255,0.2);margin-bottom:20px;width:100%;}
-.equal-container {display:flex;justify-content:space-between;gap:20px;width:100%;margin-top:10px;}
-.clients-box, .contact-box {flex:1;background:rgba(30,30,30,0.9);padding:20px;border-radius:10px;box-shadow:0 0 10px rgba(0,255,255,0.2);height:260px;box-sizing:border-box;}
-.clients-box h2, .contact-box h2 {color:#00ffff;margin-bottom:15px;}
-.contact-box p {font-size:15px;margin-bottom:10px;}
-.contact-box p span {color:red;}
-.contact-box a {color:#fff;text-decoration:none;}
-.social-icons {display:flex;gap:10px;margin-top:15px;}
-.social-icons a img {width:28px;height:28px;transition:transform 0.3s;}
-.social-icons a.x img {filter:drop-shadow(0 0 5px #fff) brightness(1.5);}
-.social-icons a img:hover {transform:scale(1.1);}
+/* ══════════════════════
+   CONTACT
+══════════════════════ */
+.contact-wrap{background:var(--bg2);border-top:1px solid var(--border);}
+.contact-inner{max-width:1200px;margin:0 auto;padding:100px 48px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
+.contact-info .sec-title{font-size:clamp(24px,3.5vw,40px);}
+.contact-info p.desc{color:var(--muted);font-size:14px;line-height:1.8;margin:14px 0 32px;}
+.cdet{display:flex;align-items:center;gap:16px;margin-bottom:18px;}
+.cdet-icon{
+  width:42px;height:42px;flex-shrink:0;border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  background:rgba(0,255,204,0.04);color:var(--c);
+}
+.cdet-text label{display:block;font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:3px;}
+.cdet-text a,.cdet-text span{font-size:13.5px;color:var(--text);text-decoration:none;}
+.cdet-text a:hover{color:var(--c);}
+.soc-row{display:flex;gap:10px;margin-top:32px;}
+.soc{
+  width:40px;height:40px;border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--muted);text-decoration:none;font-size:13px;font-family:var(--display);font-weight:700;
+  transition:all .2s;
+}
+.soc:hover{border-color:var(--c);color:var(--c);background:rgba(0,255,204,0.05);}
 
-/* Slider */
-.slider {position:relative;width:100%;overflow:hidden;margin-bottom:20px;}
-.slides {display:flex;transition:transform 0.5s ease-in-out;width:100%;}
-.slide {min-width:100%;box-sizing:border-box;padding:20px;background:rgba(20,20,20,0.9);border-radius:10px;}
-.dots {text-align:center;margin-top:10px;}
-.dots span {display:inline-block;width:10px;height:10px;background:#00ffff;border-radius:50%;margin:0 5px;cursor:pointer;}
-.active-dot {background:#ff4d4d;}
+/* FORM */
+.form-box{background:var(--bg);border:1px solid var(--border);padding:36px 32px;}
+.form-box h3{font-family:var(--display);font-size:15px;font-weight:600;color:#fff;margin-bottom:28px;letter-spacing:0.5px;}
+.fg{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+.fg label{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.fg input,.fg textarea,.fg select{
+  background:var(--bg2);border:1px solid var(--border);
+  padding:11px 14px;color:var(--text);font-size:13px;font-family:var(--body);
+  outline:none;transition:border-color .2s;-webkit-appearance:none;
+}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--c);}
+.fg input::placeholder,.fg textarea::placeholder{color:var(--dim);}
+.fg textarea{min-height:110px;resize:vertical;}
+.fg select option{background:var(--bg2);}
 
-/* Footer */
-footer {margin-top:30px;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#777;width:100%;border-top:1px solid #222;padding-top:15px;}
-footer .links a {color:#00ffff;margin-left:5px;}
+/* ══════════════════════
+   INFO STRIP
+══════════════════════ */
+.strip{
+  background:rgba(0,5,10,0.98);border-top:2px solid var(--c);
+  padding:72px 48px;
+}
+.strip-inner{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:48px;
+}
+.strip-col h4{font-family:var(--display);font-size:12px;font-weight:600;color:var(--c);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.strip-col p{color:var(--muted);font-size:13px;line-height:1.7;}
+.strip-col a{color:var(--c);text-decoration:none;font-size:13px;display:block;margin-bottom:6px;font-family:var(--mono);}
+.strip-col a:hover{color:#fff;}
+
+/* ══════════════════════
+   FOOTER
+══════════════════════ */
+footer{
+  border-top:1px solid var(--border);background:var(--bg);
+  padding:28px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+}
+.foot-left{font-family:var(--mono);font-size:11px;color:var(--dim);}
+.foot-links{display:flex;gap:20px;}
+.foot-links a{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--muted);text-decoration:none;}
+.foot-links a:hover{color:var(--c);}
+.foot-reg{font-family:var(--mono);font-size:10px;color:var(--dim);border:1px solid var(--border);padding:4px 10px;}
+
+/* ══════════════════════
+   TOAST
+══════════════════════ */
+.toast{
+  position:fixed;bottom:24px;right:24px;z-index:999;
+  background:var(--bg2);border:1px solid var(--c);
+  padding:14px 18px;display:flex;align-items:center;gap:12px;
+  font-family:var(--mono);font-size:12px;color:var(--text);max-width:310px;
+  transform:translateY(80px);opacity:0;transition:all .4s;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast-icon{color:var(--c);font-size:18px;flex-shrink:0;}
+.toast strong{color:#fff;display:block;margin-bottom:3px;}
+
+/* ══════════════════════
+   MOBILE
+══════════════════════ */
+@media(max-width:768px){
+  nav{padding:0 20px;}
+  .nav-links,.nav-cta{display:none;}
+  .hero,.sec{padding:80px 20px 60px;}
+  .threat-inner,.contact-inner,.process-grid{grid-template-columns:1fr;gap:40px;}
+  .threat-wrap,.contact-wrap .contact-inner,.strip{padding:60px 20px;}
+  footer{padding:20px;flex-direction:column;text-align:center;}
+  .stats-bar{flex-wrap:wrap;}
+}
 </style>
 </head>
 <body>
 
-<!-- ✅ Animated Background -->
-<div class="animated-bg"></div>
-<div class="lines"></div>
+<!-- BG LAYERS -->
+<canvas id="cvs"></canvas>
+<div class="grid"></div>
+<div class="scanbar"></div>
 
-<div class="overlay">
-<header>
-<div>
-<h1>MellowTecH Company<span class="registered">®</span></h1>
-<h2 class="tagline">(Pty) Ltd</h2>
-<h2 class="tagline">Cybersecurity Company</h2>
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-icon">&#x1F6E1;</div>
+  <div><strong>Threat Neutralized</strong>AI blocked 312 intrusion attempts in the last hour</div>
 </div>
-<div class="regno">REG NO: 2025/457277/07</div>
-</header>
 
-<!-- ✅ Navbar -->
-<nav class="navbar">
-<div class="nav-item"><a href="#">Platform</a><div class="dropdown-content">MellowTech’s platform delivers next-generation AI-powered cybersecurity, providing adaptive threat detection and automated defense mechanisms.</div></div>
-<div class="nav-item"><a href="#">Services</a><div class="dropdown-content">Our services include managed security, AI threat monitoring, vulnerability assessments, and tailored risk mitigation solutions for businesses.</div></div>
-<div class="nav-item"><a href="#">Solutions</a><div class="dropdown-content">We offer enterprise-grade solutions to fight cybercrime with precision, from AI-driven firewalls to real-time botnet disruption technologies.</div></div>
-<div class="nav-item"><a href="#">Why MellowTech</a><div class="dropdown-content">We are redefining cybersecurity by merging innovation, AI, and expertise to provide unmatched protection and reliability.</div></div>
-<div class="nav-item"><a href="#">Resources</a><div class="dropdown-content">Access whitepapers, case studies, AI research, and cyber intelligence reports to strengthen your security posture.</div></div>
-<div class="nav-item"><a href="#">Pricing</a><div class="dropdown-content">Our pricing is flexible, offering cost-effective cybersecurity tailored to startups, enterprises, and government agencies.</div></div>
+<div class="page">
+
+<!-- ══ NAV ══ -->
+<nav>
+  <a class="nav-brand" href="#">
+    <!-- INLINE SVG LOGO: shield with lock + circuit lines -->
+    <svg class="logo-svg" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- shield body -->
+      <path d="M22 2L5 9v12c0 10.5 7.2 20.3 17 23 9.8-2.7 17-12.5 17-23V9L22 2z" fill="rgba(0,255,204,0.08)" stroke="#00ffcc" stroke-width="1.2"/>
+      <!-- lock shackle -->
+      <rect x="16" y="21" width="12" height="9" rx="1.5" fill="none" stroke="#00ffcc" stroke-width="1.2"/>
+      <path d="M18 21v-3a4 4 0 018 0v3" stroke="#00ffcc" stroke-width="1.2" stroke-linecap="round"/>
+      <!-- keyhole -->
+      <circle cx="22" cy="25.5" r="1.5" fill="#00ffcc"/>
+      <rect x="21.2" y="25.5" width="1.6" height="2.5" rx=".8" fill="#00ffcc"/>
+      <!-- circuit dots -->
+      <circle cx="7" cy="22" r="1" fill="rgba(0,255,204,0.5)"/>
+      <circle cx="37" cy="22" r="1" fill="rgba(0,255,204,0.5)"/>
+      <line x1="8" y1="22" x2="13" y2="22" stroke="rgba(0,255,204,0.3)" stroke-width="0.8"/>
+      <line x1="31" y1="22" x2="36" y2="22" stroke="rgba(0,255,204,0.3)" stroke-width="0.8"/>
+    </svg>
+    <div>
+      <div class="brand-text">Mellow<em>TecH</em><sup style="font-size:9px;color:var(--c);vertical-align:super;"> ®</sup></div>
+      <span class="brand-sub">Cybersecurity &middot; Est. 2025</span>
+    </div>
+  </a>
+  <div class="nav-links">
+    <a href="#services">Services</a>
+    <a href="#platform">Platform</a>
+    <a href="#why">Why Us</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <button class="nav-cta" onclick="scrollTo('contact')">Get Protected</button>
 </nav>
 
-<!-- ✅ About MellowTech Slider -->
-<h2 style="color:#00ffff;">About MellowTech</h2>
-<div class="box-section">
-<div class="slider" id="contentSlider">
-<div class="slides">
-<div class="slide">Our Vision: Leading the Cybersecurity Revolution – MellowTech envisions a safer digital world where every business, regardless of size, operates securely with our innovative protection solutions.</div>
-<div class="slide">Cutting-Edge Technology – Using AI, ML, and threat intelligence, we prevent and neutralize attacks before they happen, keeping you steps ahead of hackers.</div>
-<div class="slide">Trusted by Businesses – Our expert team safeguards infrastructures with proven digital defense strategies.</div>
-<div class="slide">Why Investors Choose MellowTech – Combining innovation, scalability, and demand, we attract investors to lead cybersecurity growth.</div>
-</div>
-<div class="dots" id="sliderDots"></div>
-</div>
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="hero-badge-dot"></span>
+    AI Threat Intelligence &middot; Active
+  </div>
+  <h1 class="hero-title">
+    Defend What<br/>
+    <span class="line2">Matters Most</span>
+    <span class="line3">AI-Powered Cybersecurity</span>
+  </h1>
+  <p class="hero-desc">MellowTecH delivers next-generation AI-driven protection for South African businesses and governments — detecting and neutralising threats before they reach you.</p>
+  <div class="hero-btns">
+    <button class="btn-pri" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Start Protection</button>
+    <button class="btn-sec" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">View Services</button>
+  </div>
 
-<!-- ✅ Powering the Future -->
-<div class="large-box">
-<h2>Powering the Future with AI-Driven Cybersecurity</h2>
-<p>MellowTech leads the transformation of cybersecurity, replacing outdated manual defenses with advanced AI-driven systems. Our mission is to empower businesses and governments with intelligent, automated, and proactive protection against evolving digital threats.</p>
-</div>
-</div>
+  <!-- TERMINAL -->
+  <div class="terminal">
+    <div class="term-bar">
+      <div class="tdot r"></div><div class="tdot y"></div><div class="tdot g"></div>
+      <span class="term-title">mellowtech-shield &mdash; ai-monitor v3.1.0 &mdash; ZA</span>
+    </div>
+    <div class="term-body">
+      <div class="tl"><span class="tp">&#62;</span><span class="tc"> mellowtech --init --region=ZA --mode=ai-sentinel</span></div>
+      <div class="to ok">&#10003; AI engine online &mdash; 99.97% accuracy rate</div>
+      <div class="to ok">&#10003; Threat feed connected &mdash; 14,209 IOCs loaded</div>
+      <div class="to ok">&#10003; Firewall rules active &mdash; 28,841 policies enforced</div>
+      <div class="to warn">&#9888; Anomaly detected: port scan from 197.8.x.x</div>
+      <div class="to err">&#10007; Intrusion blocked &mdash; ransomware payload neutralised</div>
+      <div class="to ok">&#10003; Incident auto-logged &mdash; response triggered in 180ms</div>
+      <div class="tl" style="margin-top:4px;"><span class="tp">&#62;</span><span class="tc" id="tcmd"></span><span class="tcursor"></span></div>
+    </div>
+  </div>
 
-<!-- ✅ Equal Boxes -->
-<div class="equal-container">
-<div class="clients-box">
-<h2>What Clients Say</h2>
-<p id="testimonial">"MellowTech protected our systems better than anyone!"</p>
-</div>
-<div class="contact-box">
-<h2>Contact MellowTech</h2>
-<p><span>Location:</span> Sandton, Johannesburg</p>
-<p><span>Email:</span> <a href="mailto:mphogivenmello@gmail.com">mphogivenmello@gmail.com</a></p>
-<p><span>Web:</span> <a href="https://mellowtech.com">mellowtech.com</a></p>
-<div class="social-icons">
-<a class="x" href="https://x.com/" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/5968/5968958.png"></a>
-<a href="https://facebook.com/" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/733/733547.png"></a>
-<a href="https://www.instagram.com/_given_222_/" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/1384/1384063.png"></a>
-<a href="https://linkedin.com/" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/3536/3536505.png"></a>
-<a href="https://wa.me/27828621375" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/733/733585.png"></a>
-</div>
-</div>
-</div>
-
-<!-- ✅ Restored Section Above Privacy -->
-<section style="background:rgba(15,15,15,0.95);color:#ccc;padding:40px 30px;border-top:2px solid #00ffff;width:100%;box-sizing:border-box;margin-top:30px;">
-<div style="display:flex;flex-wrap:nowrap;justify-content:space-between;gap:50px;overflow-x:auto;">
-<div style="flex:1;min-width:250px;"><h3 style="color:#00ffff;">Products</h3><p>MellowTech is driving innovation by transforming cybersecurity from manual operations to an AI-powered era. Our solutions integrate intelligent threat detection, automated response systems, and data protection frameworks to safeguard businesses and governments.</p></div>
-<div style="flex:1;min-width:250px;"><h3 style="color:#00ffff;">Community Services</h3><p>We collaborate with communities to create a safer digital future through AI-powered threat sharing, training, and awareness programs.</p></div>
-<div style="flex:1;min-width:250px;"><h3 style="color:#00ffff;">Support</h3><p>Available: Mon – Fri, 09:00–17:00 SAST<br>Our 24/7 AI-powered monitoring ensures rapid incident response.</p></div>
-<div style="flex:1;min-width:250px;"><h3 style="color:#00ffff;">Follow Us</h3><p><a href="https://instagram.com" style="color:#00ffff;">Instagram</a> | <a href="https://x.com" style="color:#fff;font-weight:bold;">X</a> | <a href="https://linkedin.com" style="color:#00ffff;">LinkedIn</a></p></div>
-</div>
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-n"><span id="s1">0</span>M<span>+</span></div><div class="stat-l">Threats Blocked</div></div>
+    <div class="stat"><div class="stat-n"><span id="s2">0</span><span>ms</span></div><div class="stat-l">Response Time</div></div>
+    <div class="stat"><div class="stat-n"><span id="s3">0</span><span>%</span></div><div class="stat-l">Detection Rate</div></div>
+    <div class="stat"><div class="stat-n">24<span>/7</span></div><div class="stat-l">AI Monitoring</div></div>
+  </div>
 </section>
 
-<!-- ✅ Footer -->
-<footer>
-<div>© 2025 MellowTecH Company (Pty) Ltd <span class="links"><a href="#">Privacy Policy</a> | <a href="#">POPIA Act</a></span></div>
-</footer>
+<!-- ══ SERVICES ══ -->
+<section class="sec" id="services">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;">
+    <div>
+      <div class="sec-label">What We Do</div>
+      <h2 class="sec-title">Enterprise security<br/><em>services</em></h2>
+    </div>
+    <p class="sec-desc">Every layer of your digital infrastructure, protected by AI and our certified team.</p>
+  </div>
+  <div class="svc-grid">
+    <div class="svc-card">
+      <div class="svc-icon">&#x1F50D;</div>
+      <h3>AI Threat Detection</h3>
+      <p>ML models trained on millions of attack signatures neutralise threats before they breach your perimeter.</p>
+      <div class="svc-tag">Real-time &rarr;</div>
+    </div>
+    <div class="svc-card">
+      <div class="svc-icon">&#x1F6E1;</div>
+      <h3>Managed SOC</h3>
+      <p>24/7 Security Operations Centre backed by certified analysts and automated incident response playbooks.</p>
+      <div class="svc-tag">Always On &rarr;</div>
+    </div>
+    <div class="svc-card">
+      <div class="svc-icon">&#x1F513;</div>
+      <h3>Penetration Testing</h3>
+      <p>Ethical hacking by our certified red team to find your weaknesses before attackers do. Detailed remediation reports.</p>
+      <div class="svc-tag">Certified Team &rarr;</div>
+    </div>
+    <div class="svc-card">
+      <div class="svc-icon">&#x2601;</div>
+      <h3>Cloud Security</h3>
+      <p>Continuous misconfiguration scanning and compliance automation across AWS, Azure, and GCP environments.</p>
+      <div class="svc-tag">Multi-cloud &rarr;</div>
+    </div>
+    <div class="svc-card">
+      <div class="svc-icon">&#x26A1;</div>
+      <h3>Incident Response</h3>
+      <p>When breaches happen, our DFIR team deploys rapidly to contain, investigate, and restore operations.</p>
+      <div class="svc-tag">Rapid Deploy &rarr;</div>
+    </div>
+    <div class="svc-card">
+      <div class="svc-icon">&#x1F4CB;</div>
+      <h3>POPIA Compliance</h3>
+      <p>Built for South Africa — we map your data flows and automate controls to keep you audit-ready under the POPIA Act.</p>
+      <div class="svc-tag">SA-First &rarr;</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ THREAT LIVE ══ -->
+<div class="threat-wrap">
+  <div class="threat-inner">
+    <div>
+      <div class="sec-label">Live Intelligence</div>
+      <h2 class="sec-title">Attacks stopped<br/><em>right now</em></h2>
+      <p style="color:var(--muted);font-size:14px;line-height:1.8;margin:14px 0 0;">Our AI monitors 40+ threat vectors simultaneously, blocking attacks in milliseconds before they reach your network.</p>
+      <div class="live-badge">Live Feed Active</div>
+      <div class="counters">
+        <div class="ctr">
+          <span class="ctr-label">Intrusions blocked today</span>
+          <span class="ctr-val" id="cb">0</span>
+        </div>
+        <div class="ctr">
+          <span class="ctr-label">Malware signatures caught</span>
+          <span class="ctr-val red" id="cm">0</span>
+        </div>
+        <div class="ctr">
+          <span class="ctr-label">Endpoints secured</span>
+          <span class="ctr-val" id="ce">0</span>
+        </div>
+      </div>
+    </div>
+    <div class="map-wrap">
+      <canvas id="tmap" width="560" height="340"></canvas>
+      <div class="map-label">LIVE THREAT MAP</div>
+    </div>
+  </div>
 </div>
 
-<script>
-/* Slider */
-const slides=document.querySelector('.slides');
-const dotsContainer=document.getElementById('sliderDots');
-const totalSlides=document.querySelectorAll('.slide').length;
-let index=0;
-for(let i=0;i<totalSlides;i++){const dot=document.createElement('span');dot.addEventListener('click',()=>moveToSlide(i));dotsContainer.appendChild(dot);}
-const dots=dotsContainer.querySelectorAll('span');
-function updateDots(){dots.forEach((d,i)=>d.classList.toggle('active-dot',i===index));}
-function moveToSlide(i){index=i;slides.style.transform=`translateX(${-index*100}%)`;updateDots();}
-function nextSlide(){index=(index+1)%totalSlides;moveToSlide(index);}
-setInterval(nextSlide,4000);moveToSlide(0);
+<!-- ══ PLATFORM / HOW IT WORKS ══ -->
+<section class="sec" id="platform">
+  <div class="process-grid">
+    <div>
+      <div class="sec-label">Our Process</div>
+      <h2 class="sec-title">How we<br/><em>protect you</em></h2>
+      <p class="sec-desc" style="margin-top:14px;">A structured, AI-accelerated approach that closes every gap in your security posture.</p>
+    </div>
+    <div class="process-steps">
+      <div class="pstep">
+        <div class="pnode">01</div>
+        <div class="pstep-body">
+          <h4>Surface Discovery</h4>
+          <p>We map every asset, credential, and vulnerability across your environment using automated scanning and expert review.</p>
+        </div>
+      </div>
+      <div class="pstep">
+        <div class="pnode">02</div>
+        <div class="pstep-body">
+          <h4>AI Model Deployment</h4>
+          <p>Custom-tuned threat models calibrated to your industry risk profile are deployed across all ingestion points.</p>
+        </div>
+      </div>
+      <div class="pstep">
+        <div class="pnode">03</div>
+        <div class="pstep-body">
+          <h4>Continuous Monitoring</h4>
+          <p>Telemetry from endpoints, networks, and cloud feeds into our SIEM — AI triage reduces alert noise by 94%.</p>
+        </div>
+      </div>
+      <div class="pstep">
+        <div class="pnode">04</div>
+        <div class="pstep-body">
+          <h4>Automated Response</h4>
+          <p>Confirmed threats trigger isolation playbooks in under 200ms. Your team is notified with full context instantly.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-/* Testimonials */
-const reviews=['"MellowTech protected our systems better than anyone!"','"Top-notch security and professional service."','"We feel safe knowing MellowTech monitors our data."'];
-let r=0;setInterval(()=>{r=(r+1)%reviews.length;document.getElementById("testimonial").innerText=reviews[r];},3000);
+<!-- ══ WHY US ══ -->
+<section class="sec" id="why" style="padding-top:0;">
+  <div class="sec-label">The MellowTecH Edge</div>
+  <h2 class="sec-title">Why businesses<br/><em>choose us</em></h2>
+  <div class="why-grid">
+    <div class="why-card">
+      <div class="why-n">99.97<span style="font-size:18px;">%</span></div>
+      <h4>Detection Accuracy</h4>
+      <p>Industry-leading precision from continuously retrained AI models</p>
+    </div>
+    <div class="why-card">
+      <div class="why-n">&lt;200<span style="font-size:18px;">ms</span></div>
+      <h4>Response Time</h4>
+      <p>Automated containment before a human analyst even sees the alert</p>
+    </div>
+    <div class="why-card">
+      <div class="why-n">24<span style="font-size:18px;">/7</span></div>
+      <h4>AI-Powered SOC</h4>
+      <p>Human analysts amplified by machine intelligence, always on guard</p>
+    </div>
+    <div class="why-card">
+      <div class="why-n" style="font-size:28px;">SA&#x2011;1st</div>
+      <h4>Local Expertise</h4>
+      <p>Built for South African regulations, threats, and business needs</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TESTIMONIALS ══ -->
+<section class="sec" style="padding-top:0;overflow:hidden;">
+  <div class="sec-label">Client Results</div>
+  <h2 class="sec-title">Trusted by <em>security leaders</em></h2>
+  <div class="t-track" id="ttrack">
+    <div class="t-card">
+      <div class="t-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <p>"MellowTecH's AI caught a sophisticated supply-chain attack our previous vendor missed. Their team had us contained in under 15 minutes."</p>
+      <div class="t-author">
+        <div class="t-av">TM</div>
+        <div><div class="t-name">Thabo Molefe</div><div class="t-role">CTO &mdash; FinTech Africa</div></div>
+      </div>
+    </div>
+    <div class="t-card">
+      <div class="t-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <p>"We went from 200+ daily alerts to 3–4 high-confidence incidents per week. The noise reduction alone transformed our security operations."</p>
+      <div class="t-author">
+        <div class="t-av">NV</div>
+        <div><div class="t-name">Nomvula Venter</div><div class="t-role">CISO &mdash; Retail Group SA</div></div>
+      </div>
+    </div>
+    <div class="t-card">
+      <div class="t-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <p>"POPIA compliance felt impossible until MellowTecH mapped our entire data flow and automated the controls. Audit-ready in 6 weeks."</p>
+      <div class="t-author">
+        <div class="t-av">KD</div>
+        <div><div class="t-name">Keitumetse Dlamini</div><div class="t-role">Legal Director &mdash; Healthcare Org</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CONTACT ══ -->
+<div class="contact-wrap" id="contact">
+  <div class="contact-inner">
+    <div class="contact-info">
+      <div class="sec-label">Get In Touch</div>
+      <h2 class="sec-title">Ready to secure<br/><em>your business?</em></h2>
+      <p class="desc">Talk to a MellowTecH expert. We'll assess your current security posture and show you exactly where you're exposed — at no cost.</p>
+      <div class="cdet">
+        <div class="cdet-icon">&#x1F4CD;</div>
+        <div class="cdet-text"><label>Location</label><span>Sandton, Johannesburg, South Africa</span></div>
+      </div>
+      <div class="cdet">
+        <div class="cdet-icon">&#x2709;</div>
+        <div class="cdet-text"><label>Email</label><a href="mailto:mphogivenmello@gmail.com">mphogivenmello@gmail.com</a></div>
+      </div>
+      <div class="cdet">
+        <div class="cdet-icon">&#x260E;</div>
+        <div class="cdet-text"><label>WhatsApp</label><a href="https://wa.me/27828621375">+27 82 862 1375</a></div>
+      </div>
+      <div class="cdet">
+        <div class="cdet-icon">&#x1F310;</div>
+        <div class="cdet-text"><label>Website</label><a href="https://mellowtech.com" target="_blank">mellowtech.com</a></div>
+      </div>
+      <div class="soc-row">
+        <a class="soc" href="https://x.com/" target="_blank" title="X">&#120143;</a>
+        <a class="soc" href="https://facebook.com/" target="_blank" title="Facebook">f</a>
+        <a class="soc" href="https://www.instagram.com/_given_222_/" target="_blank" title="Instagram">&#9711;</a>
+        <a class="soc" href="https://linkedin.com/" target="_blank" title="LinkedIn">in</a>
+        <a class="soc" href="https://wa.me/27828621375" target="_blank" title="WhatsApp">&#9742;</a>
+      </div>
+    </div>
+    <div>
+      <div class="form-box">
+        <h3>Request a Free Assessment</h3>
+        <div id="cform">
+          <div class="fg"><label>Full Name</label><input type="text" placeholder="Your full name" id="fn"/></div>
+          <div class="fg"><label>Company</label><input type="text" placeholder="Organisation name" id="fc"/></div>
+          <div class="fg"><label>Email</label><input type="email" placeholder="work@company.co.za" id="fe"/></div>
+          <div class="fg">
+            <label>Service Needed</label>
+            <select id="fs">
+              <option value="">Select a service&hellip;</option>
+              <option>AI Threat Detection</option><option>Managed SOC</option>
+              <option>Penetration Testing</option><option>Cloud Security</option>
+              <option>POPIA Compliance</option><option>Incident Response</option>
+            </select>
+          </div>
+          <div class="fg"><label>Message</label><textarea placeholder="Tell us about your security needs&hellip;" id="fm"></textarea></div>
+          <button class="btn-pri" style="width:100%;margin-top:10px;padding:16px;" onclick="submitForm()">Send Request &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ INFO STRIP ══ -->
+<div class="strip">
+  <div class="strip-inner">
+    <div class="strip-col">
+      <h4>Products</h4>
+      <p>MellowTecH transforms cybersecurity from reactive to proactive — integrating intelligent threat detection, automated response, and data protection into one unified platform.</p>
+    </div>
+    <div class="strip-col">
+      <h4>Community</h4>
+      <p>We partner with communities across South Africa to build a safer digital future through AI-powered threat sharing, training workshops, and awareness programs.</p>
+    </div>
+    <div class="strip-col">
+      <h4>Support</h4>
+      <p>Office hours: Mon–Fri, 09:00–17:00 SAST<br/>Emergency: 24/7 AI-powered monitoring with on-call analyst escalation for critical incidents.</p>
+    </div>
+    <div class="strip-col">
+      <h4>Follow Us</h4>
+      <a href="https://instagram.com" target="_blank">Instagram</a>
+      <a href="https://x.com" target="_blank">X (Twitter)</a>
+      <a href="https://linkedin.com" target="_blank">LinkedIn</a>
+      <a href="https://facebook.com" target="_blank">Facebook</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="foot-left">&copy; 2025 MellowTecH Company (Pty) Ltd &mdash; All rights reserved. Sandton, Johannesburg.</div>
+  <div class="foot-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">POPIA Act</a>
+    <a href="#">Terms</a>
+  </div>
+  <div class="foot-reg">REG: 2025/457277/07</div>
+</footer>
+
+</div><!-- /page -->
+
+<script>
+/* ══ PARTICLE + KEY/LOCK BACKGROUND ══ */
+(function(){
+  const c=document.getElementById('cvs');
+  const x=c.getContext('2d');
+  function resize(){c.width=innerWidth;c.height=innerHeight;}
+  resize();addEventListener('resize',resize);
+
+  /* particle types: dot, key, lock */
+  const P=[];
+  class Pt{
+    constructor(){this.reset(true);}
+    reset(init){
+      this.x=Math.random()*c.width;
+      this.y=init?Math.random()*c.height:Math.random()>0.5?-20:c.height+20;
+      this.vx=(Math.random()-.5)*.35;
+      this.vy=(Math.random()-.5)*.35;
+      this.a=Math.random()*.45+.08;
+      this.type=['dot','dot','dot','dot','dot','key','lock'][Math.floor(Math.random()*7)];
+      this.sz=Math.random()*1.8+.8;
+    }
+    move(){
+      this.x+=this.vx;this.y+=this.vy;
+      if(this.x<-30||this.x>c.width+30||this.y<-30||this.y>c.height+30)this.reset();
+    }
+    draw(){
+      x.globalAlpha=this.a;
+      x.strokeStyle='#00ffcc';x.fillStyle='#00ffcc';x.lineWidth=.8;
+      if(this.type==='dot'){
+        x.beginPath();x.arc(this.x,this.y,this.sz,0,Math.PI*2);x.fill();
+      } else if(this.type==='lock'){
+        /* lock body */
+        x.strokeRect(this.x-5,this.y-1,10,8);
+        /* shackle */
+        x.beginPath();x.arc(this.x,this.y-1,3.5,Math.PI,0);x.stroke();
+        /* keyhole */
+        x.beginPath();x.arc(this.x,this.y+3,1.2,0,Math.PI*2);x.fill();
+      } else {
+        /* key */
+        x.beginPath();x.arc(this.x,this.y,3.5,0,Math.PI*2);x.stroke();
+        x.fillRect(this.x+3.5,this.y-.5,9,1);
+        x.fillRect(this.x+10,this.y-.5,1,2.5);
+        x.fillRect(this.x+8,this.y-.5,1,2);
+      }
+      x.globalAlpha=1;
+    }
+  }
+  for(let i=0;i<100;i++)P.push(new Pt());
+
+  /* connections */
+  function links(){
+    x.lineWidth=.3;
+    for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){
+      const dx=P[i].x-P[j].x,dy=P[i].y-P[j].y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<130){x.globalAlpha=(1-d/130)*.1;x.strokeStyle='#00cfff';x.beginPath();x.moveTo(P[i].x,P[i].y);x.lineTo(P[j].x,P[j].y);x.stroke();}
+    }
+    x.globalAlpha=1;
+  }
+
+  function loop(){
+    x.clearRect(0,0,c.width,c.height);
+    P.forEach(p=>{p.move();p.draw();});
+    links();
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+/* ══ THREAT MAP CANVAS ══ */
+(function(){
+  const c=document.getElementById('tmap');
+  const x=c.getContext('2d');
+  c.width=560;c.height=340;
+  const nodes=Array.from({length:22},()=>({
+    x:20+Math.random()*520,y:15+Math.random()*310,
+    vx:(Math.random()-.5)*.45,vy:(Math.random()-.5)*.45,
+    type:Math.random()>.72?'threat':'safe',
+    p:Math.random()*Math.PI*2,sz:Math.random()*3+3
+  }));
+  const pkts=[];
+  function spawnPkt(){
+    const s=nodes[Math.floor(Math.random()*nodes.length)];
+    const d=nodes[Math.floor(Math.random()*nodes.length)];
+    if(s!==d)pkts.push({x:s.x,y:s.y,tx:d.x,ty:d.y,t:0,bad:Math.random()>.45});
+  }
+  setInterval(spawnPkt,500);
+
+  function frame(){
+    x.clearRect(0,0,c.width,c.height);
+    x.fillStyle='#010a0f';x.fillRect(0,0,c.width,c.height);
+    /* grid */
+    x.strokeStyle='rgba(0,255,204,0.04)';x.lineWidth=.8;
+    for(let i=0;i<c.width;i+=40){x.beginPath();x.moveTo(i,0);x.lineTo(i,c.height);x.stroke();}
+    for(let j=0;j<c.height;j+=40){x.beginPath();x.moveTo(0,j);x.lineTo(c.width,j);x.stroke();}
+    /* edges */
+    nodes.forEach((a,i)=>nodes.slice(i+1).forEach(b=>{
+      const d=Math.hypot(a.x-b.x,a.y-b.y);
+      if(d<110){x.globalAlpha=.07;x.strokeStyle='#00ffcc';x.lineWidth=.8;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();}
+    }));
+    x.globalAlpha=1;
+    /* packets */
+    pkts.forEach((p,i)=>{
+      p.t+=.02;
+      const cx=p.x+(p.tx-p.x)*p.t,cy=p.y+(p.ty-p.y)*p.t;
+      x.fillStyle=p.bad?'#ff3a3a':'#00ffcc';
+      x.globalAlpha=.9;x.beginPath();x.arc(cx,cy,2.5,0,Math.PI*2);x.fill();
+      x.globalAlpha=1;
+      if(p.t>=1)pkts.splice(i,1);
+    });
+    /* nodes */
+    nodes.forEach(n=>{
+      n.x+=n.vx;n.y+=n.vy;
+      if(n.x<8||n.x>c.width-8)n.vx*=-1;
+      if(n.y<8||n.y>c.height-8)n.vy*=-1;
+      n.p+=.03;
+      const col=n.type==='threat'?'#ff3a3a':'#00ffcc';
+      x.globalAlpha=.12+.06*Math.sin(n.p);x.fillStyle=col;
+      x.beginPath();x.arc(n.x,n.y,n.sz*3.5,0,Math.PI*2);x.fill();
+      x.globalAlpha=1;x.fillStyle=col;
+      x.beginPath();x.arc(n.x,n.y,n.sz,0,Math.PI*2);x.fill();
+    });
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+/* ══ STAT COUNTERS ══ */
+function animNum(id,target,dur){
+  const el=document.getElementById(id);
+  const step=target/(dur/16);let cur=0;
+  const t=setInterval(()=>{cur=Math.min(cur+step,target);el.textContent=Math.floor(cur);if(cur>=target)clearInterval(t);},16);
+}
+const obs=new IntersectionObserver(e=>{if(e[0].isIntersecting){animNum('s1',12,1800);animNum('s2',180,1400);animNum('s3',99,1600);obs.disconnect();}},{threshold:.3});
+obs.observe(document.querySelector('.stats-bar'));
+
+/* live threat counters */
+let bl=31240,ml=1847,ep=5103;
+function updateCtrs(){
+  bl+=Math.floor(Math.random()*15+4);
+  ml+=Math.floor(Math.random()*5+1);
+  ep+=Math.floor(Math.random()*2);
+  const f=n=>n.toLocaleString();
+  document.getElementById('cb').textContent=f(bl);
+  document.getElementById('cm').textContent=f(ml);
+  document.getElementById('ce').textContent=f(ep);
+}
+updateCtrs();setInterval(updateCtrs,2000);
+
+/* ══ TERMINAL TYPING ══ */
+const cmds=['status --all','scan --subnet 10.0.0.0/24','block --ip 197.8.44.12','report --period 24h','update --sigs latest','audit --popia --compliance'];
+let ci=0;
+function typeNext(){
+  const cmd=cmds[ci++%cmds.length];
+  const el=document.getElementById('tcmd');
+  el.textContent='';let i=0;
+  const iv=setInterval(()=>{
+    el.textContent=' '+cmd.slice(0,++i);
+    if(i>=cmd.length){clearInterval(iv);setTimeout(typeNext,3000);}
+  },55);
+}
+setTimeout(typeNext,1200);
+
+/* ══ TESTIMONIAL SCROLL ══ */
+const tr=document.getElementById('ttrack');
+let dir=1;
+setInterval(()=>{tr.scrollLeft+=dir*1.5;if(tr.scrollLeft+tr.clientWidth>=tr.scrollWidth-10)dir=-1;if(tr.scrollLeft<=0)dir=1;},28);
+
+/* ══ TOAST ══ */
+setTimeout(()=>{const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),5500);},4000);
+
+/* ══ FORM ══ */
+function submitForm(){
+  const n=document.getElementById('fn').value;
+  const e=document.getElementById('fe').value;
+  if(!n||!e){alert('Please enter your name and email.');return;}
+  document.getElementById('cform').innerHTML=`
+    <div style="text-align:center;padding:50px 20px;">
+      <div style="font-size:52px;margin-bottom:18px;">&#x2713;</div>
+      <h3 style="font-family:'Orbitron',sans-serif;font-size:18px;color:#00ffcc;margin-bottom:12px;">Request Received</h3>
+      <p style="color:#5a8a9f;font-size:13px;line-height:1.8;">Thank you, ${n}.<br/>A MellowTecH security expert will contact you within 24 hours.</p>
+    </div>`;
+}
+
+function scrollTo(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
 </script>
 </body>
 </html>

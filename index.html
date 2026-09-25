@@ -709,24 +709,42 @@ footer{
       </div>
     </div>
     <div>
-      <div class="https://formspree.io/f/manovgkl">
-        <h3>Request a Free Assessment</h3>
-        <div id="cform">
-          <div class="fg"><label>Full Name</label><input type="text" placeholder="Your full name" id="fn"/></div>
-          <div class="fg"><label>Company</label><input type="text" placeholder="Organisation name" id="fc"/></div>
-          <div class="fg"><label>Email</label><input type="email" placeholder="work@company.co.za" id="fe"/></div>
-          <div class="fg">
-            <label>Service Needed</label>
-            <select id="fs">
-              <option value="">Select a service&hellip;</option>
-              <option>AI Threat Detection</option><option>Managed SOC</option>
-              <option>Penetration Testing</option><option>Cloud Security</option>
-              <option>POPIA Compliance</option><option>Incident Response</option>
-            </select>
-          </div>
-          <div class="fg"><label>Message</label><textarea placeholder="Tell us about your security needs&hellip;" id="fm"></textarea></div>
-          <button class="btn-pri" style="width:100%;margin-top:10px;padding:16px;" onclick="submitForm()">Send Request &rarr;</button>
-        </div>
+      <form id="cform" action="https://formspree.io/f/manovgkl" method="POST">
+  <h3>Request a Free Assessment</h3>
+
+  <div class="fg"><label>Full Name</label>
+    <input type="text" name="name" placeholder="Your full name" required />
+  </div>
+
+  <div class="fg"><label>Company</label>
+    <input type="text" name="company" placeholder="Organisation name" />
+  </div>
+
+  <div class="fg"><label>Email</label>
+    <input type="email" name="email" placeholder="work@company.co.za" required />
+  </div>
+
+  <div class="fg">
+    <label>Service Needed</label>
+    <select name="service">
+      <option value="">Select a service&hellip;</option>
+      <option>AI Threat Detection</option>
+      <option>Managed SOC</option>
+      <option>Penetration Testing</option>
+      <option>Cloud Security</option>
+      <option>POPIA Compliance</option>
+      <option>Incident Response</option>
+    </select>
+  </div>
+
+  <div class="fg"><label>Message</label>
+    <textarea name="message" placeholder="Tell us about your security needs&hellip;" required></textarea>
+  </div>
+
+  <button class="btn-pri" type="submit" style="width:100%;margin-top:10px;padding:16px;">
+    Send Request &rarr;
+  </button>
+</form>
       </div>
     </div>
   </div>
